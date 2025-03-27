@@ -56,9 +56,9 @@ function shelfBooks() {
         readStatus.textContent = book.read ? "Read" : "Not read yet";
 
         const readBtn = document.createElement('button');
-        if (book.read === true) {
+        if (book.read) {
             readBtn.textContent = "I Haven't Read this"
-        } else if (book.read === false) {
+        } else {
             readBtn.textContent = 'I Read This'
         }
 
@@ -67,7 +67,7 @@ function shelfBooks() {
 
         const removeBtn = document.createElement('button');
         removeBtn.textContent = "Remove"
-        removeBtn.classList.add('readBtn')
+        removeBtn.classList.add('removeBtn')
 
         card.appendChild(title);
         card.appendChild(author);
@@ -91,6 +91,9 @@ bookshelf.addEventListener('click', (e) => {
         libraryCatalog.splice(splicedBook, 1);
         shelfBooks();
     }
+});
+
+bookshelf.addEventListener('click', (e) => {
     if (e.target.classList.contains('readBtn')) {
         const card = e.target.closest('.book');
         const bookIndex = Array.from(bookshelf.children).indexOf(card);
