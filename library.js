@@ -5,6 +5,7 @@ const dialog = document.querySelector('#newBookDialog');
 const openDialogBtn = document.querySelector('#openDialogBtn');
 const closeDialogBtn = document.querySelector('#closeDialogBtn');
 const form = document.querySelector('#newBookForm');
+const removeBtnClass = document.querySelector('.removeBtn')
 
 function Book(title, author, pages, read) {
     if (!new.target) {
@@ -20,10 +21,13 @@ function Book(title, author, pages, read) {
         } else {
             return(`${title} by ${author}, ${pages} pages, not read yet`)
         }
-        
     }
-    this.id = uuid;
-}
+    this.id = self.crypto.randomUUID();
+};
+
+Book.prototype.readButton = function() {
+    this.read = !this.read;
+};
 
 function addBook(title, author, pages, read) {
     const newBook = new Book(title, author, pages, read)
@@ -51,17 +55,50 @@ function shelfBooks() {
         const readStatus = document.createElement('p');
         readStatus.textContent = book.read ? "Read" : "Not read yet";
 
+        const readBtn = document.createElement('button');
+        if (book.read === true) {
+            readBtn.textContent = "I Haven't Read this"
+        } else if (book.read === false) {
+            readBtn.textContent = 'I Read This'
+        }
+
+        readBtn.classList.add('readBtn')
+        
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = "Remove"
+        removeBtn.classList.add('readBtn')
+
         card.appendChild(title);
         card.appendChild(author);
         card.appendChild(pages);
         card.appendChild(readStatus);
+        card.appendChild(readBtn);
+        card.appendChild(removeBtn);
 
         bookshelf.appendChild(card);
     });
-}
+};
 
 openDialogBtn.addEventListener('click', () => dialog.showModal());
 closeDialogBtn.addEventListener('click', () => dialog.close());
+
+bookshelf.addEventListener('click', (e) => {
+    if (e.target.classList.contains('removeBtn')) {
+        const card = e.target.closest('.book');
+        const splicedBook = Array.from(bookshelf.children).indexOf(card);
+
+        libraryCatalog.splice(splicedBook, 1);
+        shelfBooks();
+    }
+    if (e.target.classList.contains('readBtn')) {
+        const card = e.target.closest('.book');
+        const bookIndex = Array.from(bookshelf.children).indexOf(card);
+        const book = libraryCatalog[bookIndex];
+        book.readButton();
+        shelfBooks();
+    }
+});
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
